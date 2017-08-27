@@ -1,0 +1,17 @@
+﻿<Properties StartupItem="Assembly-CSharp.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Script\DataAnalyzer.cs">
+    <Files>
+      <File FileName="Assets\Script\VRLate.cs" Line="193" Column="46" />
+      <File FileName="Assets\Script\SerialAsyncReader.cs" Line="70" Column="1" />
+      <File FileName="Assets\Script\SerialCommunication.cs" Line="45" Column="113" />
+      <File FileName="Assets\Script\Calibrator.cs" Line="1" Column="1" />
+      <File FileName="Assets\Script\Validator.cs" Line="1" Column="1" />
+      <File FileName="Assets\Script\DataAnalyzer.cs" Line="160" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
