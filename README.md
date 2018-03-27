@@ -17,6 +17,18 @@ To determine the mouth-to-ear latency with the described measurement setup, a lo
 ### Remote latency
 If the delay between multiple VR systems needs to be measured, synchronization is required. In the presented method, GPS receivers are used to synchronize multiple microcontrollers and measure delays in distributed VR systems.
 
+## Hardware
+
+
+## Software
+
+# Prerequisites
+To run the VRLate program following programs need to be installed:
+```
+Arduino IDE (Tested with version 1.8.4)
+Unity 3D (Tested with version 2017.1.1f1)
+```
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
