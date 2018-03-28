@@ -34,7 +34,7 @@ display. Attaching the photosensor a few millimetres away from the correction le
 
 ## Software
 
-# Prerequisites
+### Prerequisites
 To run the VRLate program following programs need to be installed:
 ```
 Arduino IDE (Tested with version 1.8.4)
