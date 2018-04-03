@@ -48,6 +48,8 @@ namespace VRLate
 		public int baudrate = 250000;
 		[Tooltip ("Seconds before measurement starts after presed 'MEASURE' key")]
 		public float countdown = 3;
+		[Tooltip ("Number of frames which should virtually be delayed for the measure tool to test the accuracy")]
+		public int delay = 0;
 
 		// The highest digital value captured by the AD converter of the microcontroller
 		public const int POTENTIOMETER_MAX_AD_READING = 8191;
@@ -58,7 +60,7 @@ namespace VRLate
 		// Maximum angle wich shall be used for measurement
 		public const float MEASUREMENT_MAX_ANGLE = 120f;
 		// The Coding for Photodiodes. Lower number means lower acuracy but better distance between codes
-		public const int NUMERAL_SYSTEM = 8;
+		public const int NUMERAL_SYSTEM = 8; 
 		//The max possible value that can be displayed with the photosensors and numeral system.
 		// Example: 4 Sensors and 8 values per sensor = pow(8,4)-1
 		public const int PHOTOSENSOR_MAX_VALUE = (NUMERAL_SYSTEM * NUMERAL_SYSTEM * NUMERAL_SYSTEM * NUMERAL_SYSTEM) - 1;
@@ -80,6 +82,7 @@ namespace VRLate
 		private Photosensorfield photoSensorField;
 		private PhotosensorCalibration photosensorCalibration;
 		private DataAnalyzer dataAnalyzer;
+		private Queue<float> delayQueue;
 
 		void Awake ()
 		{
@@ -88,6 +91,7 @@ namespace VRLate
 			calibrator = gameObject.AddComponent<Calibrator> () as Calibrator;
 			validator = gameObject.AddComponent<Validator> () as Validator;
 			dataAnalyzer = new DataAnalyzer ();
+			delayQueue = new Queue<float> (delay + 1);
 		}
 
 		void Start ()
@@ -106,7 +110,11 @@ namespace VRLate
 				yRot %= MEASUREMENT_MAX_ANGLE;
 				float percentage = yRot / MEASUREMENT_MAX_ANGLE;
 				Debug.Log ("yRot: " + yRot + " percentage: " + percentage);
-				photoSensorField.displayRotationPercentageValue (percentage);
+				delayQueue.Enqueue( percentage );
+				if (delayQueue.Count > delay) {
+					float currentPercentage = delayQueue.Dequeue ();
+					photoSensorField.displayRotationPercentageValue (currentPercentage);
+				}
 			}
 		}
 
