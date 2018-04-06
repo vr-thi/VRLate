@@ -35,11 +35,17 @@ display. Attaching the photosensor a few millimetres away from the correction le
 ## Software
 
 ### Prerequisites
-To run the VRLate program following programs need to be installed:
-```
-Arduino IDE (Tested with version 1.8.4)
-Unity 3D (Tested with version 2017.1.1f1)
-```
+
+To run the project the following software needs to be installed:
+
+- **Arduino 1.6.13** IDE to compile the c++ code to the microcontroller. [link](https://www.arduino.cc/en/Main/OldSoftwareReleases "link")
+- **Teensy Loader 1.32** Program used to allow the compilation of teensy code with the arduino IDE. [link (windows)](https://www.pjrc.com/teensy/td_132/TeensyduinoInstall.exe)
+- **Unity 3D 2017.1.1f1** Game engine [link](https://unity3d.com/de/get-unity/download/archive)
+- **(optional) TTL Driver** Driver for used TTL adapter. Required to be installed manually for Windows 7.[link](https://www.jens-bretschneider.de/aktuelle-treiber-fur-seriell-zu-usb-adapter/)
+
+> Note that you should install the versions that were tested. This is especially true for the arduino IDE and the teensy loader where it is known for sure that a newer version won't compile the code as expected. With arduino 1.8.x the size of the measurement units array leads to an unexpected error which stops the code from execution. This is a bug of the newer version and could not be resolved yet.
+
+## Getting Started
 
 ## License
 
