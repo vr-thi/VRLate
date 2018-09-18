@@ -1,38 +1,34 @@
 # VRLate
-Tool to measure motion-to-photon and mouth-to-ear latency in distributed VR-Systems.
+Tool to measure motion-to-photon and mouth-to-ear latency in distributed VR-Systems. For more information have a look at the [paper](https://arxiv.org/abs/1809.06320 "paper") presented at the [15th workshop on VR and AR of the Gesellschaft für Informatik e.V. 2018](https://www.givrar2018.de/).
 
 ## Overview
-Compared to existing measurement techniques, the described method is specially designed for distributed VR systems. It will help to quickly evaluate different setups in terms of motion-to-photon and mouth-to-ear latencies. The game-engine Unity 3D is used to simulate the virtual world. 
-A quick overview of the used hardware and software of the measurement system will be given in the following two subsections.
+Compared to existing measurement techniques, the described method is specially designed for distributed VR systems. It will help to quickly evaluate different setups in terms of motion-to-photon and mouth-to-ear latencies. The game-engine Unity 3D is used to simulate the virtual world. The following two figures demonstrate how the system works. 
+
 <p>
   <img src="Images/systemOverview.png" width="300"/>
   <img src="Images/SystemImage.JPG" width="550"/>
 </p>
 
-### Motion-to-photon latency
-Motion and the corresponding display output of a VR system are captured by a potentiometer and a photosensor which are both connected to a microcontroller. An object tracked by the VR system is mounted on the potentiometer and automatically rotated back and forth. The motion is controlled by a servo motor connected to the microcontroller. By monitoring the horizontal rotation with the potentiometer, it is possible to determine the rotary position of the real object at every interval.
-To get the delay between the rotation of the real object and the corresponding display output, the latest angle captured by the motion-tracking system is presented on the VR display. 
-The displayed value is converted into a brightness code so that it can be read with the microcontroller. By attaching the measurement unit’s photosensor to the display, it is possible to capture this brightness code and therefore the angle which was used by the VR system to render the current frame.
-The perceived motion-to-photon latency is determined by comparing both signals with each other using cross-correlation.
-### Mouth-to-ear latency
-To determine the mouth-to-ear latency with the described measurement setup, a low-cost piezo buzzer and a microphone are used. Right before starting the measurement the microcontroller activates the buzzer for a short period of time. At every interval, the microcontroller checks if the attached microphone detects any sound. Then, the mouth-to-ear latency can be determined by counting the intervals between the beginning of the measurement and the received sound-impulse.
-### Remote latency
-If the delay between multiple VR systems needs to be measured, synchronization is required. In the presented method, GPS receivers are used to synchronize multiple microcontrollers and measure delays in distributed VR systems.
+Two distributed measurement systems are synchronized via a GPS timepules. At both stations the motion-to-photon latency and the mouth-to-ear latency is measured via a potentiometer, photodiodes, piezo buzzers, and microphones. For more information please read the [paper](https://arxiv.org/abs/1809.06320 "paper").
 
 ## Hardware
+The hardware setup of the system is shown in the following picture. All circutes are drawn with the open-source software *Fritzing* and are added to the [Fritzing folder]("/Fritzing/").
 
 <img src="Images/hardwareSetup.png" width="600">
+
 
 ### Rotation platform
 For the measurement setup, a potentiometer is used to continuously trace the rotation angle of the tracked object (e.g., an HMD). The platform rotary motion is controlled by a servo connected to the microcontroller. With this setup, steady back-and-forth movements of the tracked object are possible.
 ### Photosensor
 The photosensor is used to monitor display outputs and captures the rotary angle of the tracking system which is output in a brightness code. During measurement, right before the rendering process, the VR system outputs the last captured horizontal rotation angle in an encoded brightness code. To get a resolution of 4096 different values, four areas on the display are used to output a number in the octal numeral system. By capturing each area with a light-sensitive sensor connected to the microcontroller, it is possible to get the rotation angle output of the VR system at every interval. The whole photosensor consists of four TSL250R photosensors. 
 
-<img src="Images/photodiodes.png" width="300">
-
 With the HMDs used in this work, it is not possible to directly attach the photosensor to the VR display without the need to disassemble the hardware. HMDs use optical lenses in front of the display system to expand the field of view. Without any light path correction, it is not possible to get a sharp image of the displayed frame on a flat surface.
-To read the brightness code of the VR system on HMDs, an additional optical lens is necessary. For the measurement setup, convex lenses built into the low-cost VR glasses Google Cardboard where directly attached to the lenses of the HMD to correct the light path of the VR
-display. Attaching the photosensor a few millimeters away from the correction lens makes it possible to read the displayed brightness code. 
+To read the brightness code of the VR system on HMDs, an additional optical lens is necessary. For the measurement setup, convex lenses built into the low-cost VR glasses Google Cardboard where directly attached to the lenses of the HMD to correct the light path of the VR display. Attaching the photosensor a few millimeters away from the correction lens makes it possible to read the displayed brightness code. 
+
+As shown in the following two figures, the photodiodes 
+
+<img src="Images/photodiodes.png" width="300">
+<img src="Images/photodiodes_diagram.jpg" width="300">
 
 ## Software
 
@@ -48,6 +44,15 @@ To run the project the following software needs to be installed:
 > Note that you should install the versions that were tested. This is especially true for the Arduino IDE and the teensy loader where it is known for sure that a newer version won't compile the code as expected. With Arduino 1.8.x the size of the measurement units array leads to an unexpected error which stops the code from execution. This is a bug of the newer version and could not be resolved yet.
 
 ## Getting Started
+After the hardware is setup, the teensy microcontroller needs to be connected with the computer running the VR simulation. Within the provided Unity project open the *VRLate* scene. There is only one parent game object (*camera*) which has the VRLate script attached to it. All necessary settings must only be set in that script. 
+
+Please make sure that Unity and teensy are connected correctly and check if the serial port is set correctly in the *VR Late script* (default is COM4). Run the Unity project and check whether error messages occur. If so, check the wireing again and make sure that the baudrate is set correctly (default is 250000). 
+
+If no error message occurs, you can start with the photodiode calibration process. Run the Unity project and hit *F1* to start calibration. This process will take several minutes. If it was not successful, make sure that the photosensor is attached correctly and that all four photodiodes only receive the light of the corresponding white square on the display. 
+
+After calibration, the end-to-end latency can be measured. If you want to only get the delay at one VR system you need to press *F3*. If you have two distributed systems which are synchronized via a valid GPS timestamp, you can press *F4* on both stations and the measurement will start at the next full minute. 
+
+After measurement, Unity outputs a csv file to the designated folder (set output directory in *VRLate script*). The provided [R-script](/Parser/VRLate.r) can then be used to retrieve the motion-to-photon delay via cross-correlation.
 
 ## License
 
