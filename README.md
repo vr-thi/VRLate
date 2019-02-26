@@ -2,7 +2,7 @@
 Tool to measure motion-to-photon and mouth-to-ear latency in distributed VR-Systems. For more information have a look at the [paper](https://arxiv.org/abs/1809.06320 "paper") presented at the [15th workshop on VR and AR of the Gesellschaft für Informatik e.V. 2018](https://www.givrar2018.de/).
 
 ## Overview
-Compared to existing measurement techniques, the described method is specially designed for distributed VR systems. It will help to quickly evaluate different setups in terms of motion-to-photon and mouth-to-ear latencies. The game-engine Unity 3D is used to simulate the virtual world. The following two figures demonstrate how the system works. 
+Compared to existing measurement techniques, the described method is specially designed for distributed VR systems. It will help to evaluate different setups in terms of motion-to-photon and mouth-to-ear latencies. The game-engine *Unity 3D* is used to simulate the virtual world. The following two figures demonstrate how the system works. 
 
 <p>
   <img src="Images/systemOverview.png" width="300"/>
