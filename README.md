@@ -32,8 +32,6 @@ As shown in the following two figures, the photodiodes
 
 ## Software
 
-### Prerequisites
-
 To run the project the following software needs to be installed:
 
 - **Arduino 1.6.13** IDE to compile the C++ code to the microcontroller. [link](https://www.arduino.cc/en/Main/OldSoftwareReleases "link")
@@ -43,8 +41,20 @@ To run the project the following software needs to be installed:
 
 > Note that you should install the versions that were tested. This is especially true for the Arduino IDE and the teensy loader where it is known for sure that a newer version won't compile the code as expected. With Arduino 1.8.x the size of the measurement units array leads to an unexpected error which stops the code from execution. This is a bug of the newer version and could not be resolved yet.
 
-## Getting Started
-After the hardware is setup, the teensy microcontroller needs to be connected with the computer running the VR simulation. Within the provided Unity project open the *VRLate* scene. There is only one parent game object (*camera*) which has the VRLate script attached to it. All necessary settings must only be set in that script. 
+## Quick Start
+
+### Setup 
+Both USB-ports of the *Teensy 3.2* bust be connected to the PC. The built-in mini-USB-port is used to program and debug the microcontroller. The other USB to TTL adapter is used to communicate between the Unity instance and the external microcontroller. Before you can start using the hardware you have to compile and upload the C++ code. Start the Arduino IDE and select the *Teensy 3.2* board. Also make sure that the correct USB-interface and Port is selected (see the following screenshots).
+
+<img src="Images/change-arduino-board.png" width="450">
+<img src="Images/arduinoSettingsPort.png" width="450">
+<img src="Images/arduinoSettingsUSBType.png" width="450">
+
+
+
+### Run 
+
+After the hardware is setup, the teensy microcontroller needs to be connected with the computer running the VR simulation. Within the provided Unity project open the *VRLate* scene. There is only one parent game object (*camera*) which has the VRLate script attached to it. All necessary settings must only be set in that script.
 
 Please make sure that Unity and teensy are connected correctly and check if the serial port is set correctly in the *VR Late script* (default is COM4). Run the Unity project and check whether error messages occur. If so, recheck the wiring and make sure that the baud rate is set correctly (default is 250000). 
 
