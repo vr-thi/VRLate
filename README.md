@@ -34,12 +34,10 @@ As shown in the following two figures, the photodiodes
 
 To run the project the following software needs to be installed:
 
-- **Arduino 1.6.13** IDE to compile the C++ code to the microcontroller. [link](https://www.arduino.cc/en/Main/OldSoftwareReleases "link")
-- **Teensy Loader 1.32** Program used to allow the compilation of teensy code with the Arduino IDE. [link (windows)](https://www.pjrc.com/teensy/td_132/TeensyduinoInstall.exe)
+- **Arduino 1.8.8** IDE to compile the C++ code to the microcontroller. [link](https://www.arduino.cc/en/Main/OldSoftwareReleases "link")
+- **Teensy Loader 1.45** Program used to allow the compilation of teensy code with the Arduino IDE. [link (windows)](https://www.pjrc.com/teensy/td_145/TeensyduinoInstall.exe)
 - **Unity 3D 2017.1.1f1** Game engine [link](https://unity3d.com/de/get-unity/download/archive)
-- **(optional) TTL Driver** Driver for used TTL adapter. Required to be installed manually for Windows 7.[link](https://www.jens-bretschneider.de/aktuelle-treiber-fur-seriell-zu-usb-adapter/)
-
-> Note that you should install the versions that were tested. This is especially true for the Arduino IDE and the teensy loader where it is known for sure that a newer version won't compile the code as expected. With Arduino 1.8.x the size of the measurement units array leads to an unexpected error which stops the code from execution. This is a bug of the newer version and could not be resolved yet.
+- **(optional) TTL Driver** Driver for used TTL adapter. Required to be installed manually for Windows 7. [link](https://www.jens-bretschneider.de/aktuelle-treiber-fur-seriell-zu-usb-adapter/)
 
 ## Quick Start
 
@@ -49,6 +47,10 @@ Both USB-ports of the *Teensy 3.2* bust be connected to the PC. The built-in min
 <img src="Images/change-arduino-board.png" width="450">
 <img src="Images/arduinoSettingsPort.png" width="450">
 <img src="Images/arduinoSettingsUSBType.png" width="450">
+
+Another very important setting that needs to be adjusted is the optimizer. Make sure that the Arduino compiler optimizes for smallest code. See next image for details:
+
+<img src="Images/optimize.png" width="450">
 
 After the controller is powered via the USB-Port, the second USB->TTL adapter should be visible to the windows operating system. Open the device manager and check that a COM port is open. 
 
