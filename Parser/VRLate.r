@@ -51,7 +51,7 @@ latency = Find_Abs_Max_CCF(photo$Value[-c(0:leadingZeros)],poti$Value[-c(0:leadi
 
 # Draw Plots
 par(mfrow=c(3,1))
-plot(poti$Interval[-c(0:leadingZeros)],poti$Value[-c(0:leadingZeros)], xlim=xlim,  col = "blue",xlab = "Time (ms)",ylab = "Rotation", main ="Potentiometer")
-plot(photo$Interval[-c(0:leadingZeros)],photo$Value[-c(0:leadingZeros)], xlim=xlim, col = "red",ylab = "Rotation",xlab = "Time (ms)", main ="Photodiode")
+plot(poti$Interval[-c(0:leadingZeros)],poti$Value[-c(0:leadingZeros)], xlim=c(0,5000),  col = "blue",xlab = "Time (ms)",ylab = "Rotation", main ="Potentiometer")
+plot(photo$Interval[-c(0:leadingZeros)],photo$Value[-c(0:leadingZeros)], xlim=c(0,5000), col = "red",ylab = "Rotation",xlab = "Time (ms)", main ="Photodiode")
 ccf(photo$Value[-c(0:leadingZeros)],poti$Value[-c(0:leadingZeros)], lag.max = 100, lag.min = -100,ylab = "cross-correlation",main = "Cross-Correlation(photo,poti)")
 title(main=paste("Latency: ",latency[2]," ms"), adj=1)
