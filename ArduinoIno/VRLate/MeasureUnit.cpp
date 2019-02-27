@@ -17,7 +17,7 @@ IN THE SOFTWARE.
 
 // Use this to output debug info to console
 #define DEBUG 1 
-// Incerase this for more analog reads per measurement.
+// Increase this for more analog reads per measurement.
 #define ANALOG_READ_AVERAGING 5
 // Resolution of the AD-Converter
 #define ANALOG_RESOLUTION 13

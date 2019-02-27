@@ -40,7 +40,7 @@ class MeasureUnit {
   public:
     MeasureUnit();
     void begin(); 
-    bool update(); // needs to be called in main loop during measurement. Ret false if measurement is over
+    bool update(); // needs to be called in main loop during measurement. Return false if measurement is over
     void cancel();  // Cancel the current measure session
     void setNumberOfMeasureintervals(unsigned long nr);
   private:
@@ -50,7 +50,6 @@ class MeasureUnit {
     void updateRotationPlatform();
     void pushOnBuffer (const uint16_t *arr, int length);
     void transmitData();
-    void goToStartPos();
     uint16_t valuesInBuffer;
     uint16_t buffer[BUFFER_SIZE];
     uint16_t potiStartPos;
