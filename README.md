@@ -16,19 +16,13 @@ The hardware setup of the system is shown in the following picture. All circuits
 
 <img src="Images/hardwareSetup.png" width="600">
 
-
 ### Rotation platform
 For the measurement setup, a potentiometer is used to continuously trace the rotation angle of the tracked object (e.g., an HMD). A servo connected to the microcontroller controls the platform rotary motion. With this setup, steady back-and-forth movements of the tracked object are possible.
+
 ### Photosensor
-The photosensor is used to monitor display outputs and captures the rotary angle of the tracking system which is output in a brightness code. During measurement, right before the rendering process, the VR system outputs the last captured horizontal rotation angle in an encoded brightness code. To get a resolution of 4096 different values, four areas on the display are used to output a number in the octal numeral system. By capturing each area with a light-sensitive sensor connected to the microcontroller, it is possible to get the rotation angle output of the VR system at every interval. The whole photosensor consists of four TSL250R photosensors. 
+The photosensor is used to monitor display outputs and captures the rotary angle of the tracking system which is output in a brightness code. During measurement, right before the rendering process, the VR system outputs the last captured horizontal rotation angle in an encoded brightness code. The *TSL250R photosensors* was used to capture the screen brightness with the microcontroller. 
 
-With the HMDs used in this work, it is not possible to directly attach the photosensor to the VR display without the need to disassemble the hardware. HMDs use optical lenses in front of the display system to expand the field of view. Without any light path correction, it is not possible to get a sharp image of the displayed frame on a flat surface.
-To read the brightness code of the VR system on HMDs, an additional optical lens is necessary. For the measurement setup, convex lenses built into the low-cost VR glasses Google Cardboard where directly attached to the lenses of the HMD to correct the light path of the VR display. Attaching the photosensor a few millimeters away from the correction lens makes it possible to read the displayed brightness code. 
-
-As shown in the following two figures, the photodiodes 
-
-<img src="Images/photodiodes.png" width="300">
-<img src="Images/photodiodes_diagram.jpg" width="300">
+> Please Note that in the paper we described and used a photosensor with four *TSL250R* diodes. Further tests showed that the system could also be simplified by only using one diode. The Unity code was updated to work with one photodiode reading only.
 
 ## Software
 
@@ -37,9 +31,16 @@ To run the project the following software needs to be installed:
 - **Arduino 1.8.8** IDE to compile the C++ code to the microcontroller. [link](https://www.arduino.cc/en/Main/OldSoftwareReleases "link")
 - **Teensy Loader 1.45** Program used to allow the compilation of teensy code with the Arduino IDE. [link (windows)](https://www.pjrc.com/teensy/td_145/TeensyduinoInstall.exe)
 - **Unity 3D 2017.1.1f1** Game engine [link](https://unity3d.com/de/get-unity/download/archive)
+- **R** Statistics program [link](https://cran.r-project.org/bin/windows/base/). **RStudio** is recommended as IDE [link](https://www.rstudio.com/).
 - **(optional) TTL Driver** Driver for used TTL adapter. Required to be installed manually for Windows 7. [link](https://www.jens-bretschneider.de/aktuelle-treiber-fur-seriell-zu-usb-adapter/)
 
 ## Quick Start
+
+The project can be split in three components:
+
+- **ArduinoIno** Contains all the microcontroller code.
+- **Unity** Untiy 3D project to output the brightness code, take measurements and write the results to disk.
+- **Parser** R script to parse the measurement results and calculate the end-to-end latency of the VR-system.
 
 ### Setup 
 Both USB-ports of the *Teensy 3.2* bust be connected to the PC. The built-in mini-USB-port is used to program and debug the microcontroller. The other USB to TTL adapter is used to communicate between the Unity instance and the external microcontroller. Before you can start using the hardware you have to compile and upload the C++ code. Start the Arduino IDE and select the *Teensy 3.2* board. Also make sure that the correct USB-interface and Port is selected (see the following screenshots).
@@ -60,18 +61,18 @@ Compile and upload the VRLate code via the Arduino IDE.
 
 ### Run 
 
-After the hardware is setup, the teensy microcontroller needs to be connected with the computer running the VR simulation. Within the provided Unity project open the *VRLate* scene. There is only one parent game object (*camera*) which has the VRLate script attached to it. All necessary settings must only be set in that script.
+After the hardware is setup, the teensy microcontroller needs to be connected with the computer running the VR simulation. Within the provided Unity project open the *VRLate* scene. There is only one parent game object (*camera*) which has the VRLate script attached to it. All necessary settings must be set in this script instance.
 
-Please make sure that Unity and teensy are connected correctly and check if the serial port is set correctly in the *VR Late script* (default is COM4). Run the Unity project and check whether error messages occur. If so, recheck the wiring and make sure that the baud rate is set correctly (default is 250000). 
+Please make sure that Unity and teensy are connected correctly and check if the right serial port is set in the *VR Late script* (default is COM4). Run the Unity project and check whether error messages occur. If so, recheck the wiring and make sure that the baud rate is set correctly (default is 250000). 
 
-If no error message occurs, you can start with the photodiode calibration process. Run the Unity project and hit *F1* to start calibration. This process will take several minutes. If it was not successful, make sure that the photosensor is attached correctly and that all four photodiodes only receive the light of the corresponding white square on the display. 
+If no error message occurs, you can start taking measurements. Run the Unity project and hit *F1* to start measurement. If no servo motor is connected to the microcontroller you then have to rotate the HMD mounted on the potentiometer back and forth manually. 
 
-After calibration, the end-to-end latency can be measured. If you want to only get the delay at one VR system you need to press *F3*. If you have two distributed systems which are synchronized via a valid GPS timestamp, you can press *F4* on both stations and the measurement will start at the next full minute. 
+If you have two distributed systems which are synchronized via a valid GPS timestamp, you can press *F2* on both stations and the measurement will start at the next full minute. 
 
-After measurement, Unity outputs a CSV file to the designated folder (set output directory in *VRLate script*). The provided [R-script](/Parser/VRLate.r) can then be used to retrieve the motion-to-photon delay via cross-correlation.
+After measurement, Unity outputs CSV files to the designated folder (set output directory in *VRLate script*). The provided [R-script](/Parser/VRLate.r) can then be used to retrieve the motion-to-photon delay via cross-correlation.
 
 ## Citation
-If you use this code for your research, please consider citing:
+If you use this project for your research, please consider citing:
 
     @article{Becher.2018,
          author = {
