@@ -14,74 +14,70 @@ IN THE SOFTWARE.
 ***********************************************************************************/
 
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace VRLate
 {
-	public class SensorData
-	{
-		private ArrayList rawData;
-		// First Index is the sensor ID. Second the received value counter
-		private int[][] photoSensorData;
-		private int[] potentiometerData;
-		private int audioDelay;
+    public class SensorData
+    {
+        private ArrayList rawData;
+        // First Index is the sensor ID. Second the received value counter
+        private int[] photoSensorData;
+        private int[] potentiometerData;
+        private int audioDelay;
 
-		public SensorData (ArrayList data)
-		{
-			rawData = data;
-			parseRawData ();
-		}
+        public SensorData(ArrayList data)
+        {
+            rawData = data;
+            ParseRawData();
+        }
 
-		public void printRawData ()
-		{
-			foreach (var item in rawData) {
-				Debug.Log (rawData);
-			}
-		}
+        public void PrintRawData()
+        {
+            foreach (var item in rawData)
+            {
+                Debug.Log(rawData);
+            }
+        }
 
-		public int[][] getPhotoSensorData ()
-		{
-			return photoSensorData;
-		}
+        public int[] GetPhotoSensorData()
+        {
+            return photoSensorData;
+        }
 
-		public int[] getPotentiometerData ()
-		{
-			return potentiometerData;
-		}
+        public int[] GetPotentiometerData()
+        {
+            return potentiometerData;
+        }
 
-		public int getAudioDelay ()
-		{
-			return audioDelay;
-		}
+        public int GetAudioDelay()
+        {
+            return audioDelay;
+        }
 
-		private void parseRawData ()
-		{
-			if (rawData == null) {
-				Debug.LogError ("No Data received. Please check connection to Microcontroller");
-				return;
-			}
-			audioDelay = (int)rawData [0];
-			int nrOfSensorReadings = (rawData.Count - 1) / 5;
-			Debug.Log ("Number of Sensorreadings: " + nrOfSensorReadings);
-			photoSensorData = new int[4] [];
-			potentiometerData = new int[nrOfSensorReadings];
-			for (int i = 0; i < 4; ++i) {
-				photoSensorData [i] = new int[nrOfSensorReadings];
-			}
+        private void ParseRawData()
+        {
+            if (rawData == null)
+            {
+                Debug.LogError("No Data received. Please check connection to Microcontroller");
+                return;
+            }
+            audioDelay = (int)rawData[0];
+            int nrOfSensorReadings = (rawData.Count - 1) / 5;
+            Debug.Log("Number of Sensorreadings: " + nrOfSensorReadings);
+            photoSensorData = new int[nrOfSensorReadings];
+            potentiometerData = new int[nrOfSensorReadings];
 
-			for (int i = 0; i < nrOfSensorReadings; ++i) {
-				potentiometerData [i] = (int)rawData [5 * i + 1];
-				photoSensorData [0] [i] = (int)rawData [5 * i + 2];
-				photoSensorData [1] [i] = (int)rawData [5 * i + 3];
-				photoSensorData [2] [i] = (int)rawData [5 * i + 4];
-				photoSensorData [3] [i] = (int)rawData [5 * i + 5];
-			}
-		}
+            for (int i = 0; i < nrOfSensorReadings; ++i)
+            {
+                potentiometerData[i] = (int)rawData[5 * i + 1];
+                photoSensorData[i] = (int)rawData[5 * i + 2];
+            }
+        }
 
-		// Hide default ctor
-		private SensorData ()
-		{
-		}
-	}
+        // Hide default ctor
+        private SensorData()
+        {
+        }
+    }
 }
