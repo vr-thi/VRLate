@@ -15,7 +15,7 @@ IN THE SOFTWARE.
 
 #include "GPSTime.h"
 
-#define DEBUG 1 // Use this to output debug info to console
+//#define DEBUG 1 // Use this to output debug info to console
 
 static volatile gpsTime_t currTime;
 static volatile uint32_t lastTimePulse_us = 0;

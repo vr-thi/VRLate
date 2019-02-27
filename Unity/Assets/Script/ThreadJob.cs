@@ -17,65 +17,72 @@ using System.Collections;
 
 public class ThreadJob
 {
-	public bool isDone;
+    public bool isDone;
 
-	private bool done = false;
-	private object handle = new object ();
-	private System.Threading.Thread thread = null;
+    private bool done = false;
+    private object handle = new object();
+    private System.Threading.Thread thread = null;
 
-	public bool IsDone {
-		get {
-			bool tmp;
-			lock (handle) {
-				tmp = done;
-			}
-			return tmp;
-		}
-		set {
-			lock (handle) {
-				done = value;
-			}
-		}
-	}
+    public bool IsDone
+    {
+        get
+        {
+            bool tmp;
+            lock (handle)
+            {
+                tmp = done;
+            }
+            return tmp;
+        }
+        set
+        {
+            lock (handle)
+            {
+                done = value;
+            }
+        }
+    }
 
-	public virtual void Start ()
-	{
-		thread = new System.Threading.Thread (Run);
-		thread.Start ();
-	}
+    public virtual void Start()
+    {
+        thread = new System.Threading.Thread(Run);
+        thread.Start();
+    }
 
-	public virtual void Abort ()
-	{
-		thread.Abort ();
-	}
+    public virtual void Abort()
+    {
+        thread.Abort();
+    }
 
-	protected virtual void ThreadFunction ()
-	{
-	}
+    protected virtual void ThreadFunction()
+    {
+    }
 
-	protected virtual void OnFinished ()
-	{
-	}
+    protected virtual void OnFinished()
+    {
+    }
 
-	public virtual bool Update ()
-	{
-		if (IsDone) {
-			OnFinished ();
-			return true;
-		}
-		return false;
-	}
+    public virtual bool Update()
+    {
+        if (IsDone)
+        {
+            OnFinished();
+            return true;
+        }
+        return false;
+    }
 
-	public IEnumerator WaitFor ()
-	{
-		while (!Update ()) {
-			yield return null;
-		}
-	}
+    public IEnumerator WaitFor()
+    {
+        while (!Update())
+        {
+            yield return null;
+        }
+    }
 
-	private void Run ()
-	{
-		ThreadFunction ();
-		IsDone = true;
-	}
+    private void Run()
+    {
+        ThreadFunction();
+        IsDone = true;
+    }
 }
