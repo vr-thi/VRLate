@@ -50,7 +50,11 @@ Both USB-ports of the *Teensy 3.2* bust be connected to the PC. The built-in min
 <img src="Images/arduinoSettingsPort.png" width="450">
 <img src="Images/arduinoSettingsUSBType.png" width="450">
 
+After the controller is powered via the USB-Port, the second USB->TTL adapter should be visible to the windows operating system. Open the device manager and check that a COM port is open. 
 
+<img src="Images/device-manager.png" width="450">
+
+Compile and upload the VRLate code via the Arduino IDE. 
 
 ### Run 
 
