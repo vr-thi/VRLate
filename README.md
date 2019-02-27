@@ -54,6 +54,24 @@ After calibration, the end-to-end latency can be measured. If you want to only g
 
 After measurement, Unity outputs a csv file to the designated folder (set output directory in *VRLate script*). The provided [R-script](/Parser/VRLate.r) can then be used to retrieve the motion-to-photon delay via cross-correlation.
 
+## Citation
+If you use this code for your research, please consider citing:
+
+	@article{Becher.2018,
+		 author = {
+			Becher, Armin 
+			and Angerer, Jens 
+			and Grauschopf, Thomas},
+		 title = {Novel Approach to Measure Motion-To-Photon and Mouth-To-Ear Latency in Distributed Virtual Reality Systems},
+		 publisher = {Shaker},
+		 isbn = {978-3-8440-6215-1},
+		 series = {Berichte aus der Informatik},
+		 editor = {Herder, Jens and Geiger, Christian and D{\"o}rner, Ralf and Grimm, Paul},
+		 booktitle = {Virtuelle und Erweiterte Realit{\"a}t},
+		 year = {2018},
+		 address = {Herzogenrath}
+	}
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
