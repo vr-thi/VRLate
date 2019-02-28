@@ -20,58 +20,58 @@ namespace VRLate
 {
     public class SensorData
     {
-        private ArrayList rawData;
+        private ArrayList _rawData;
         // First Index is the sensor ID. Second the received value counter
-        private int[] photoSensorData;
-        private int[] potentiometerData;
-        private int audioDelay;
+        private int[] _photoSensorData;
+        private int[] _potentiometerData;
+        private int _audioDelay;
 
         public SensorData(ArrayList data)
         {
-            rawData = data;
+            _rawData = data;
             ParseRawData();
         }
 
         public void PrintRawData()
         {
-            foreach (var item in rawData)
+            foreach (var item in _rawData)
             {
-                Debug.Log(rawData);
+                Debug.Log(_rawData);
             }
         }
 
         public int[] GetPhotoSensorData()
         {
-            return photoSensorData;
+            return _photoSensorData;
         }
 
         public int[] GetPotentiometerData()
         {
-            return potentiometerData;
+            return _potentiometerData;
         }
 
         public int GetAudioDelay()
         {
-            return audioDelay;
+            return _audioDelay;
         }
 
         private void ParseRawData()
         {
-            if (rawData == null)
+            if (_rawData == null)
             {
                 Debug.LogError("No Data received. Please check connection to Microcontroller");
                 return;
             }
-            audioDelay = (int)rawData[0];
-            int nrOfSensorReadings = (rawData.Count - 1) / 5;
-            Debug.Log("Number of Sensorreadings: " + nrOfSensorReadings);
-            photoSensorData = new int[nrOfSensorReadings];
-            potentiometerData = new int[nrOfSensorReadings];
+            _audioDelay = (int)_rawData[0];
+            int nrOfSensorReadings = (_rawData.Count - 1) / 5;
+            Debug.Log("Number of Sensor readings: " + nrOfSensorReadings);
+            _photoSensorData = new int[nrOfSensorReadings];
+            _potentiometerData = new int[nrOfSensorReadings];
 
             for (int i = 0; i < nrOfSensorReadings; ++i)
             {
-                potentiometerData[i] = (int)rawData[5 * i + 1];
-                photoSensorData[i] = (int)rawData[5 * i + 2];
+                _potentiometerData[i] = (int)_rawData[5 * i + 1];
+                _photoSensorData[i] = (int)_rawData[5 * i + 2];
             }
         }
 

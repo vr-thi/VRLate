@@ -20,21 +20,21 @@ namespace VRLate
 {
     public class Photosensorfield : MonoBehaviour
     {
-        public Image photosensorBackground;
-        public Image photosensorArea;
+        public Image PhotosensorBackground;
+        public Image PhotosensorArea;
 
-        private bool displayGreenOnly = false;
+        private bool _displayGreenOnly = false;
 
         void Start()
         {
             // Let all images render in foreground (Effect Layer)
-            photosensorBackground.material.renderQueue = 4000;
-            photosensorArea.material.renderQueue = 4000;
+            PhotosensorBackground.material.renderQueue = 4000;
+            PhotosensorArea.material.renderQueue = 4000;
         }
 
         public void SetMonitorType(MonitorType type)
         {
-            displayGreenOnly = (type == MonitorType.DLP);
+            _displayGreenOnly = (type == MonitorType.DLP);
             if (type == MonitorType.OLED_HMD)
             {
                 gameObject.transform.Rotate(new Vector3(180f, 180f, 0));
@@ -45,11 +45,11 @@ namespace VRLate
         public void SetBrightness(byte intensity)
         {
             byte intensityRedAndBlue = intensity;
-            if (displayGreenOnly)
+            if (_displayGreenOnly)
             {
                 intensityRedAndBlue = 0;
             }
-            photosensorArea.color = new Color32(intensityRedAndBlue, intensity, intensityRedAndBlue, 255);
+            PhotosensorArea.color = new Color32(intensityRedAndBlue, intensity, intensityRedAndBlue, 255);
         }
     }
 }

@@ -22,50 +22,56 @@ using UnityEngine.VR;
 namespace VRLate
 {
     public delegate void FinishEvent();
+
     public enum MonitorType
     {
         OLED_HMD,
         LCD,
         DLP
-
     }
 
     [RequireComponent(typeof(SerialCommunication))]
     public class VRLate : MonoBehaviour
     {
         [Tooltip("Path to where all the exported CSV Files shall be added to")]
-        public string outputDirectory;
-        [Tooltip("GameObject wich shall be used to output rotation values")]
-        public GameObject trackedObject;
+        [SerializeField] private string _outputDirectory;
+
+        [Tooltip("GameObject which shall be used to output rotation values")]
+        [SerializeField] private GameObject _trackedObject;
+
         [Tooltip("Different monitors need to be evaluated differently")]
-        public MonitorType monitorType;
-        [Tooltip("Serial port of the Microconnector")]
-        public string port = "COM3";
-        [Tooltip("The baudrate of the Serial Port")]
-        public int baudrate = 250000;
-        [Tooltip("Seconds before measurement starts after presed 'MEASURE' key")]
-        public float countdown = 3;
+        [SerializeField] private MonitorType _monitorType;
+
+        [Tooltip("Serial port of the microcontroller")]
+        [SerializeField] private string _port = "COM3";
+
+        [Tooltip("The baud rate of the Serial Port")]
+        [SerializeField] private int _baudrate = 250000;
+
+        [Tooltip("Seconds before measurement starts after pressed 'MEASURE' key")]
+        [SerializeField] private float _countdown = 3;
+
         [Tooltip("Number of frames which should virtually be delayed for the measure tool to test the accuracy")]
-        public int delay = 0;
-        [Tooltip("Use this value for OLED displays. Thorw away all readings below this value.")]
-        public int blackLevelVoltag = 200;
+        [SerializeField] private int _delay = 0;
+
+        [Tooltip("Use this value for OLED displays. Throw away all readings below this value.")]
+        [SerializeField] private int _blackLevelVoltag = 200;
 
         // The highest digital value captured by the AD converter of the microcontroller
         public const int MICROCONTROLLER_MAX_AD_READING = 8191;
+
         // Maximum angle to which the rotation platform can be rotated to and the poti shows max
         // The 3.5 is the gear translation (56 teeth and 16 teeth)
         public const float POTENTIOMETER_MAX_ANGLE = 120f;
+
         //1080f / 3.5f;
-        // Maximum angle wich shall be used for measurement
+        // Maximum angle which shall be used for measurement
         public const float MEASUREMENT_MAX_ANGLE = 120f;
 
         private enum State
         {
             Idle,
-            Measure,
-            Calibrate,
-            CheckCalibration
-
+            Measure
         }
 
         private State state = State.Idle;
@@ -80,30 +86,30 @@ namespace VRLate
             serial = GetComponent<SerialCommunication>();
             photoSensorField = GetComponentInChildren<Photosensorfield>();
             dataAnalyzer = new DataAnalyzer();
-            delayQueue = new Queue<float>(delay + 1);
+            delayQueue = new Queue<float>(_delay + 1);
         }
 
         void Start()
         {
-            serial.Setup(port, baudrate);
-            dataAnalyzer.SetMonitorType(monitorType);
-            photoSensorField.SetMonitorType(monitorType);
-            dataAnalyzer.BlackLevelVoltage = blackLevelVoltag;
+            serial.Setup(_port, _baudrate);
+            dataAnalyzer.SetMonitorType(_monitorType);
+            photoSensorField.SetMonitorType(_monitorType);
+            dataAnalyzer.BlackLevelVoltage = _blackLevelVoltag;
         }
 
         void OnPreRender()
         {
             if (state == State.Measure)
             {
-                float yRot = trackedObject.transform.rotation.eulerAngles.y;
+                float yRot = _trackedObject.transform.rotation.eulerAngles.y;
                 yRot %= MEASUREMENT_MAX_ANGLE;
                 float percentage = yRot / MEASUREMENT_MAX_ANGLE;
                 Debug.Log("yRot: " + yRot + " percentage: " + percentage);
                 delayQueue.Enqueue(percentage);
-                if (delayQueue.Count > delay)
+                if (delayQueue.Count > _delay)
                 {
                     float currentPercentage = delayQueue.Dequeue();
-                    photoSensorField.SetBrightness((byte)(currentPercentage * 255));
+                    photoSensorField.SetBrightness((byte) (currentPercentage * 255));
                     Debug.Log("Brightness: " + currentPercentage);
                 }
             }
@@ -113,7 +119,7 @@ namespace VRLate
         {
             if (Input.GetKeyDown(KeyCode.F1))
             {
-                Debug.Log("Pressed F1 (Start Measre)");
+                Debug.Log("Pressed F1 (Start Measure)");
                 Measure();
             }
             else if (Input.GetKeyDown(KeyCode.F2))
@@ -134,7 +140,7 @@ namespace VRLate
             state = State.Idle;
         }
 
-        void Measure()
+        public void Measure()
         {
             if (state == State.Idle)
             {
@@ -142,13 +148,14 @@ namespace VRLate
             }
             else
             {
-                Debug.LogWarning("Another task is already runnig. Wait till it' s finished before taking measurements");
+                Debug.LogWarning(
+                    "Another task is already running. Wait till it' s finished before taking measurements");
             }
         }
 
-        IEnumerator MeasureCoroutine()
+        private IEnumerator MeasureCoroutine()
         {
-            float startTime = Time.time + countdown;
+            float startTime = Time.time + _countdown;
             while (Time.time < startTime)
             {
                 float countdowon = startTime - Time.time;
@@ -162,7 +169,7 @@ namespace VRLate
             StartCoroutine(serial.AsyncMeasure(cb));
         }
 
-        void MeasureNextMin()
+        public void MeasureNextMin()
         {
             if (state == State.Idle)
             {
@@ -177,11 +184,11 @@ namespace VRLate
             }
         }
 
-        void FinishedMeasurementCallback(ArrayList returnArray)
+        private void FinishedMeasurementCallback(ArrayList returnArray)
         {
             Debug.Log("Finished Measurement");
             SensorData sensorData = new SensorData(returnArray);
-            dataAnalyzer.GenerateOutputFiles(sensorData, outputDirectory);
+            dataAnalyzer.GenerateOutputFiles(sensorData, _outputDirectory);
             state = State.Idle;
         }
     }

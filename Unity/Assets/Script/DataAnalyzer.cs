@@ -21,66 +21,66 @@ namespace VRLate
 {
     public class DataAnalyzer
     {
-        private SensorData data;
-        private string outputDirectory;
-        private float[] trackingInputPercent;
-        private float[] monitorOutputPercent;
-        private int[] photosensorIntegerReadings;
-        private int audioDelay;
-        private MonitorType monitorType;
+        public int BlackLevelVoltage { get; set; }
+
         private const string CSV_SEPARATOR = "\t";
 
-        public int BlackLevelVoltage { get; set; }
+        private SensorData _data;
+        private string _outputDirectory;
+        private float[] _trackingInputPercent;
+        private float[] _monitorOutputPercent;
+        private int[] _photosensorIntegerReadings;
+        private int _audioDelay;
+        private MonitorType _monitorType;
 
         public void SetMonitorType(MonitorType monitorType)
         {
-            this.monitorType = monitorType;
+            this._monitorType = monitorType;
         }
 
         public void GenerateOutputFiles(SensorData data, string outputDirectory)
         {
-            this.data = data;
-            this.outputDirectory = outputDirectory;
+            this._data = data;
+            this._outputDirectory = outputDirectory;
             ConvertPhotosensorData();
             ConvertPotentiometerData();
-            audioDelay = data.GetAudioDelay();
+            _audioDelay = data.GetAudioDelay();
             WriteCSVFiles();
             Debug.Log("Finished generating output files");
         }
 
         public int[] GetPhotosensorIntegerReadings(SensorData data)
         {
-            this.data = data;
+            this._data = data;
             ConvertPhotosensorData();
-            int[] photosensorIntegerReadingsClone = (int[])photosensorIntegerReadings.Clone();
+            int[] photosensorIntegerReadingsClone = (int[]) _photosensorIntegerReadings.Clone();
             return photosensorIntegerReadingsClone;
         }
 
         private void ConvertPhotosensorData()
         {
-            int[] photosensorData = data.GetPhotoSensorData();
-            int nrOfMeasurements = photosensorData.Length;
+            int[] photosensorData = _data.GetPhotoSensorData();
 
             // TODO helper function
-            if (monitorType == MonitorType.OLED_HMD)
+            if (_monitorType == MonitorType.OLED_HMD)
             {
-                photosensorIntegerReadings = new int[photosensorData.Length];
-                for (int i = 0; i < photosensorIntegerReadings.Length; i++)
+                _photosensorIntegerReadings = new int[photosensorData.Length];
+                for (int i = 0; i < _photosensorIntegerReadings.Length; i++)
                 {
                     int currentReading = photosensorData[i];
                     if (currentReading >= BlackLevelVoltage)
                     {
-                        photosensorIntegerReadings[i] = currentReading;
+                        _photosensorIntegerReadings[i] = currentReading;
                     }
                     else
                     {
-                        photosensorIntegerReadings[i] = -1;
+                        _photosensorIntegerReadings[i] = -1;
                     }
                 }
             }
-            else if (monitorType == MonitorType.LCD)
+            else if (_monitorType == MonitorType.LCD)
             {
-                photosensorIntegerReadings = (int[])photosensorData.Clone();
+                _photosensorIntegerReadings = (int[]) photosensorData.Clone();
             }
             else
             {
@@ -88,61 +88,65 @@ namespace VRLate
             }
 
             // Convert integer reading into percentage value
-            monitorOutputPercent = new float[photosensorIntegerReadings.Length];
-            for (int measurePos = 0; measurePos < photosensorIntegerReadings.Length; measurePos++)
+            _monitorOutputPercent = new float[_photosensorIntegerReadings.Length];
+            for (int measurePos = 0; measurePos < _photosensorIntegerReadings.Length; measurePos++)
             {
-                int currIntegerReading = photosensorIntegerReadings[measurePos];
+                int currIntegerReading = _photosensorIntegerReadings[measurePos];
                 if (currIntegerReading > 0)
                 {
-                    monitorOutputPercent[measurePos] = (float)currIntegerReading / VRLate.MICROCONTROLLER_MAX_AD_READING;
+                    _monitorOutputPercent[measurePos] =
+                        (float) currIntegerReading / VRLate.MICROCONTROLLER_MAX_AD_READING;
                 }
                 else
                 {
-                    monitorOutputPercent[measurePos] = -1f;
+                    _monitorOutputPercent[measurePos] = -1f;
                 }
             }
-
         }
 
         private void ConvertPotentiometerData()
         {
-            int[] potentiometerData = data.GetPotentiometerData();
-            trackingInputPercent = new float[potentiometerData.Length];
+            int[] potentiometerData = _data.GetPotentiometerData();
+            _trackingInputPercent = new float[potentiometerData.Length];
             for (int i = 0; i < potentiometerData.Length; i++)
             {
                 int potValue = potentiometerData[i];
                 float potDegrees = potValue * VRLate.POTENTIOMETER_MAX_ANGLE / VRLate.MICROCONTROLLER_MAX_AD_READING;
                 float relValue = potDegrees / VRLate.MEASUREMENT_MAX_ANGLE;
-                trackingInputPercent[i] = relValue;
+                _trackingInputPercent[i] = relValue;
             }
         }
 
         private void WriteCSVFiles()
         {
-            if (!Directory.Exists(outputDirectory))
+            if (!Directory.Exists(_outputDirectory))
             {
-                Debug.LogWarning("Output direcotry '" + outputDirectory + "' does not exist. Try to create one.");
-                var newDir = Directory.CreateDirectory(outputDirectory);
+                Debug.LogWarning(string.Format("Output directory '{0}' does not exist. Try to create one.", _outputDirectory));
+                var newDir = Directory.CreateDirectory(_outputDirectory);
             }
-            int measureIntervals = trackingInputPercent.Length;
+
+            int measureIntervals = _trackingInputPercent.Length;
             string[] linesTrackingInput = new string[measureIntervals + 1];
             string[] linesMonitorOutput = new string[measureIntervals + 1];
             string[] lineAudioDelay = new string[1];
 
             // CSV Header
-            linesTrackingInput[0] = "Interval" + CSV_SEPARATOR + "Value";
-            linesMonitorOutput[0] = "Interval" + CSV_SEPARATOR + "Value";
-            // Data
-            for (int interval = 1; interval <= measureIntervals; interval++)
-            {
-                linesTrackingInput[interval] = interval + CSV_SEPARATOR + trackingInputPercent[interval - 1];
-                linesMonitorOutput[interval] = interval + CSV_SEPARATOR + monitorOutputPercent[interval - 1];
-            }
-            lineAudioDelay[0] = audioDelay.ToString();
+            const string headerText = "Interval" + CSV_SEPARATOR + "Value";
+            linesTrackingInput[0] = headerText;
+            linesMonitorOutput[0] = headerText;
 
-            File.WriteAllLines(outputDirectory + "/TrackingInput.csv", linesTrackingInput);
-            File.WriteAllLines(outputDirectory + "/MonitorOutput.csv", linesMonitorOutput);
-            File.WriteAllLines(outputDirectory + "/AudioDelay.txt", lineAudioDelay);
+            // Data
+            for (var interval = 1; interval <= measureIntervals; interval++)
+            {
+                linesTrackingInput[interval] = interval + CSV_SEPARATOR + _trackingInputPercent[interval - 1];
+                linesMonitorOutput[interval] = interval + CSV_SEPARATOR + _monitorOutputPercent[interval - 1];
+            }
+
+            lineAudioDelay[0] = _audioDelay.ToString();
+
+            File.WriteAllLines(_outputDirectory + "/TrackingInput.csv", linesTrackingInput);
+            File.WriteAllLines(_outputDirectory + "/MonitorOutput.csv", linesMonitorOutput);
+            File.WriteAllLines(_outputDirectory + "/AudioDelay.txt", lineAudioDelay);
         }
     }
 }

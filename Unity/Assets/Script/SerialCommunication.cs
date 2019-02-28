@@ -25,15 +25,15 @@ namespace VRLate
         // Callback is called in asyncMeasure after measurement finished
         public delegate void FinishMeasurementCallback(ArrayList retVal);
 
-        private SerialAsyncReader asyncReadJob = null;
-        private SerialPort stream;
-        private string port;
-        private int baudrate;
+        private SerialAsyncReader _asyncReadJob = null;
+        private SerialPort _stream;
+        private string _port;
+        private int _baudrate;
 
         public void Setup(string port, int baudrate)
         {
-            this.port = port;
-            this.baudrate = baudrate;
+            this._port = port;
+            this._baudrate = baudrate;
             Open();
             CheckConnection();
         }
@@ -59,7 +59,8 @@ namespace VRLate
             {
                 if (startTime.CompareTo(DateTime.UtcNow) > 0)
                 {
-                    string startTimeArgument = startTime.Hour.ToString("D2") + " " + startTime.Minute.ToString("D2") + " " + startTime.Second.ToString("D2");
+                    string startTimeArgument = startTime.Hour.ToString("D2") + " " + startTime.Minute.ToString("D2") +
+                                               " " + startTime.Second.ToString("D2");
                     Debug.Log("Send 'MEASURE_AT " + startTimeArgument + "' to microcontroller");
                     Write("MEASURE_AT " + startTimeArgument);
                     //Wait till start of measurement
@@ -73,16 +74,18 @@ namespace VRLate
                     Debug.Log("Start measuring directly. Send MEASURE message to microcontroller");
                     Write("MEASURE");
                 }
-                stream.ReadTimeout = 50;
-                asyncReadJob = new SerialAsyncReader();
-                asyncReadJob.InStream = stream;
-                asyncReadJob.Start();
-                while (!asyncReadJob.Update())
+
+                _stream.ReadTimeout = 50;
+                _asyncReadJob = new SerialAsyncReader();
+                _asyncReadJob.InStream = _stream;
+                _asyncReadJob.Start();
+                while (!_asyncReadJob.Update())
                 {
                     // Wait till job finished
                     yield return new WaitForSeconds(0.5f);
                 }
-                callback(asyncReadJob.OutReturnData);
+
+                callback(_asyncReadJob.OutReturnData);
             }
             else
             {
@@ -91,7 +94,6 @@ namespace VRLate
         }
 
         /// Private Functions /// 
-
         private bool IsReady()
         {
             return true;
@@ -109,9 +111,9 @@ namespace VRLate
 
         private bool CheckConnection()
         {
-            if (!stream.IsOpen)
+            if (!_stream.IsOpen)
             {
-                Debug.LogError("Serial port could not be Opened (" + port + "). Check Port number and restart!");
+                Debug.LogError("Serial port could not be Opened (" + _port + "). Check Port number and restart!");
                 return false;
             }
             else
@@ -125,33 +127,32 @@ namespace VRLate
                 }
                 else
                 {
-                    Debug.LogError("No microcontroller respond! Check wiring, port and baudrate!");
+                    Debug.LogError("No microcontroller respond! Check wiring, port and baud rate!");
                     return false;
                 }
             }
         }
 
         /// Low level Serial Functions /// 
-
         private void Open()
         {
-            Debug.Log("Open serial Port: " + port + " Baudrate: " + baudrate);
-            stream = new SerialPort(port, baudrate, Parity.None, 8, StopBits.One);
-            stream.Open();
+            Debug.Log("Open serial Port: " + _port + " baud rate: " + _baudrate);
+            _stream = new SerialPort(_port, _baudrate, Parity.None, 8, StopBits.One);
+            _stream.Open();
         }
 
         private void Write(string message)
         {
-            stream.WriteLine(message);
-            stream.BaseStream.Flush();
+            _stream.WriteLine(message);
+            _stream.BaseStream.Flush();
         }
 
         private string Read(int timeout_ms = 0)
         {
-            stream.ReadTimeout = timeout_ms;
+            _stream.ReadTimeout = timeout_ms;
             try
             {
-                return stream.ReadLine();
+                return _stream.ReadLine();
             }
             catch (TimeoutException)
             {
@@ -161,7 +162,7 @@ namespace VRLate
 
         private void Close()
         {
-            stream.Close();
+            _stream.Close();
         }
     }
 }

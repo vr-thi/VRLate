@@ -25,34 +25,34 @@ namespace VRLate
 		public SerialPort InStream;
 		public ArrayList OutReturnData;
 
-		private bool timeout;
-		private static float TIMEOUT_S = 30f;
+	    private static float TIMEOUT_S = 30f;
+
+        private bool _timeout;
 
 		protected override void ThreadFunction ()
 		{
 			OutReturnData = new ArrayList ();
 			int measuredValues = -1;
-			bool firstArgument = true; // First arg is the audio delay
-			bool secondArgument = false; // Second arg indicates how many values where measured
+			bool firstArgument = true; // First argument is the audio delay
+			bool secondArgument = false; // Second argument indicates how many values where measured
 			int receivedValues = 0;
 			DateTime initialTime = DateTime.Now;
-			DateTime nowTime;
-			TimeSpan diff = default(TimeSpan);
-			string dataString = null;
+		    TimeSpan diff = default(TimeSpan);
 
-			while (true) {
-				nowTime = DateTime.Now;
+		    while (true) {
+				var nowTime = DateTime.Now;
 				diff = nowTime - initialTime;
 
 				if (measuredValues != -1 && receivedValues >= measuredValues) {
-					timeout = false;
+					_timeout = false;
 					break;
 				} else if (diff.Seconds >= TIMEOUT_S) {
-					timeout = true;
+					_timeout = true;
 					break;
-				}	
+				}
 
-				try {
+			    string dataString = null;
+			    try {
 					dataString = InStream.ReadLine ();
 				} catch (TimeoutException) {
 					dataString = null;
@@ -81,7 +81,7 @@ namespace VRLate
 		protected override void OnFinished ()
 		{
 			Debug.Log ("Assync Read thread finished.");
-			if (timeout) {
+			if (_timeout) {
 				Debug.LogError ("Timeout AssyncRead. Check connection to Microcontroller");
 			} 
 		}

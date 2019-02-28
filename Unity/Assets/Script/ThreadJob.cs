@@ -19,9 +19,9 @@ public class ThreadJob
 {
     public bool isDone;
 
-    private bool done = false;
-    private object handle = new object();
-    private System.Threading.Thread thread = null;
+    private bool _done = false;
+    private readonly object handle = new object();
+    private System.Threading.Thread _thread = null;
 
     public bool IsDone
     {
@@ -30,28 +30,29 @@ public class ThreadJob
             bool tmp;
             lock (handle)
             {
-                tmp = done;
+                tmp = _done;
             }
+
             return tmp;
         }
         set
         {
             lock (handle)
             {
-                done = value;
+                _done = value;
             }
         }
     }
 
     public virtual void Start()
     {
-        thread = new System.Threading.Thread(Run);
-        thread.Start();
+        _thread = new System.Threading.Thread(Run);
+        _thread.Start();
     }
 
     public virtual void Abort()
     {
-        thread.Abort();
+        _thread.Abort();
     }
 
     protected virtual void ThreadFunction()
@@ -69,6 +70,7 @@ public class ThreadJob
             OnFinished();
             return true;
         }
+
         return false;
     }
 
