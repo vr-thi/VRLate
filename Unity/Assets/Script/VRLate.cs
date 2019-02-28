@@ -101,22 +101,25 @@ namespace VRLate
         {
             if (state == State.Measure)
             {
-                float yRot = _trackedObject.transform.rotation.eulerAngles.y;
+                // Set the brightness output of monitor based on the current tracked object y-rotation
+                var yRot = _trackedObject.transform.rotation.eulerAngles.y;
                 yRot %= MEASUREMENT_MAX_ANGLE;
-                float percentage = yRot / MEASUREMENT_MAX_ANGLE;
+                var percentage = yRot / MEASUREMENT_MAX_ANGLE;
                 Debug.Log("yRot: " + yRot + " percentage: " + percentage);
                 delayQueue.Enqueue(percentage);
+                // Use the delay queue to render frames with a certain frame delay. Used to evaluate the measure quality of the system.
                 if (delayQueue.Count > _delay)
                 {
-                    float currentPercentage = delayQueue.Dequeue();
-                    photoSensorField.SetBrightness((byte) (currentPercentage * 255));
-                    Debug.Log("Brightness: " + currentPercentage);
+                    var currentReading = delayQueue.Dequeue();
+                    photoSensorField.SetBrightness((byte) (currentReading * 255));
+                    Debug.Log("Brightness: " + currentReading);
                 }
             }
         }
 
         void Update()
         {
+            // Check for key events.
             if (Input.GetKeyDown(KeyCode.F1))
             {
                 Debug.Log("Pressed F1 (Start Measure)");
@@ -140,6 +143,9 @@ namespace VRLate
             state = State.Idle;
         }
 
+        /// <summary>
+        /// Start measurement process. Will be executed in coroutine.
+        /// </summary>
         public void Measure()
         {
             if (state == State.Idle)
@@ -153,8 +159,12 @@ namespace VRLate
             }
         }
 
+        /// <summary>
+        /// Coroutine for actual measure process.
+        /// </summary>
         private IEnumerator MeasureCoroutine()
         {
+            // Wait for countdown time to prepare measurement.
             float startTime = Time.time + _countdown;
             while (Time.time < startTime)
             {
@@ -163,12 +173,16 @@ namespace VRLate
                 yield return null;
             }
 
+            // Actually start the measurement process.
             serial.SetNumberOfMeasurements(NR_OFF_MEASUREMENTS);
             state = State.Measure;
             SerialCommunication.FinishMeasurementCallback cb = FinishedMeasurementCallback;
             StartCoroutine(serial.AsyncMeasure(cb));
         }
 
+        /// <summary>
+        /// Start taking measurements the next full minute. Wait till then.
+        /// </summary>
         public void MeasureNextMin()
         {
             if (state == State.Idle)
@@ -184,6 +198,10 @@ namespace VRLate
             }
         }
 
+        /// <summary>
+        /// Called if measurement finished successfully. 
+        /// </summary>
+        /// <param name="returnArray">The measurement results as array.</param>
         private void FinishedMeasurementCallback(ArrayList returnArray)
         {
             Debug.Log("Finished Measurement");

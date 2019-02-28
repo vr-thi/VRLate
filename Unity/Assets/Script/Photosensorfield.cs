@@ -18,6 +18,9 @@ using UnityEngine.UI;
 
 namespace VRLate
 {
+    /// <summary>
+    /// Manage the bright area on the display to output the rotation as brightness code.
+    /// </summary>
     public class Photosensorfield : MonoBehaviour
     {
         public Image PhotosensorBackground;
@@ -32,6 +35,10 @@ namespace VRLate
             PhotosensorArea.material.renderQueue = 4000;
         }
 
+        /// <summary>
+        /// Define the type of monitor used to take latency measurements.
+        /// </summary>
+        /// <param name="type">The used display technology</param>
         public void SetMonitorType(MonitorType type)
         {
             _displayGreenOnly = (type == MonitorType.DLP);
@@ -41,7 +48,10 @@ namespace VRLate
             }
         }
 
-        // intensity from 0 - 255
+        /// <summary>
+        /// Set the brightness of the output field.
+        /// </summary>
+        /// <param name="intensity">Intensity from 0 - 255.</param>
         public void SetBrightness(byte intensity)
         {
             byte intensityRedAndBlue = intensity;

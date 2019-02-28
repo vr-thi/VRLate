@@ -20,6 +20,9 @@ using UnityEngine;
 
 namespace VRLate
 {
+    /// <summary>
+    /// Communicate with microcontroller via a serial port. Send and receive messages.
+    /// </summary>
     public class SerialCommunication : MonoBehaviour
     {
         // Callback is called in asyncMeasure after measurement finished
@@ -30,6 +33,11 @@ namespace VRLate
         private string _port;
         private int _baudrate;
 
+        /// <summary>
+        /// Initializer serial communication.
+        /// </summary>
+        /// <param name="port">The port used to communicate with microcontroller.</param>
+        /// <param name="baudrate">The baud rate for the communication (can be changed in the microcontroller code).</param>
         public void Setup(string port, int baudrate)
         {
             this._port = port;
@@ -38,16 +46,24 @@ namespace VRLate
             CheckConnection();
         }
 
-        public void SetNumberOfMeasurements(int nr)
+        /// <summary>
+        /// Send SET_NO_MEASUREMENTS event to microcontoller.
+        /// </summary>
+        /// <param name="measurements">Number of measurements which shall be taken.</param>
+        public void SetNumberOfMeasurements(int measurements)
         {
             if (CheckConnection())
             {
-                string sendString = "SET_NO_MEASUREMENTS " + nr;
+                string sendString = "SET_NO_MEASUREMENTS " + measurements;
                 Debug.Log("Send " + sendString + " message to microcontroller");
                 Write(sendString);
             }
         }
 
+        /// <summary>
+        /// Send MEASURE_AT command to microcontroller to start measurement at the exact next UTC timestamp received with the GPS-module.
+        /// </summary>
+        /// <param name="callback">Function which will be called when measurement is over.</param>
         public IEnumerator AsyncMeasure(FinishMeasurementCallback callback)
         {
             yield return AsyncMeasure(callback, DateTime.UtcNow);
@@ -59,8 +75,8 @@ namespace VRLate
             {
                 if (startTime.CompareTo(DateTime.UtcNow) > 0)
                 {
-                    string startTimeArgument = startTime.Hour.ToString("D2") + " " + startTime.Minute.ToString("D2") +
-                                               " " + startTime.Second.ToString("D2");
+                    var startTimeArgument = startTime.Hour.ToString("D2") + " " + startTime.Minute.ToString("D2") +
+                                            " " + startTime.Second.ToString("D2");
                     Debug.Log("Send 'MEASURE_AT " + startTimeArgument + "' to microcontroller");
                     Write("MEASURE_AT " + startTimeArgument);
                     //Wait till start of measurement
@@ -93,22 +109,29 @@ namespace VRLate
             }
         }
 
-        /// Private Functions /// 
+        /// <summary>
+        /// Check whether microncontroller is ready to start the next command.
+        /// </summary>
+        /// <returns>True if the next command can be send. False otherwise.</returns>
         private bool IsReady()
         {
             return true;
-            /* TODO Check if Micro is at start pos
-		Write ("READY");
-		string ret = Read (100);
-		if (ret != null && ret.Equals ("READY")) {
-			Debug.Log ("Microcontroller is at startposition and ready to start measureing");
-			return true;
-		} else {
-			Debug.LogError ("Microcontroller is not Ready yet. Maybe not at startposition!");
-			return false;
-		}*/
+            /* TODO Check if Micro is at start pos. Right now no isReady mechanism is implemented on the client side.
+		    Write ("READY");
+		    string ret = Read (100);
+		    if (ret != null && ret.Equals ("READY")) {
+			    Debug.Log ("Microcontroller is at startposition and ready to start measureing");
+			    return true;
+		    } else {
+			    Debug.LogError ("Microcontroller is not Ready yet. Maybe not at startposition!");
+			    return false;
+		    }*/
         }
 
+        /// <summary>
+        /// Check whether the client microcontroller responds to messages send via the serial connection.
+        /// </summary>
+        /// <returns>True if the client responds to a simple PING request.</returns>
         private bool CheckConnection()
         {
             if (!_stream.IsOpen)
@@ -116,24 +139,23 @@ namespace VRLate
                 Debug.LogError("Serial port could not be Opened (" + _port + "). Check Port number and restart!");
                 return false;
             }
-            else
+
+            Write("PING");
+            var ret = Read(1000);
+            if (ret != null && ret.Equals("PONG"))
             {
-                Write("PING");
-                string ret = Read(1000);
-                if (ret != null && ret.Equals("PONG"))
-                {
-                    Debug.Log("Communication with michrocontroller was possible");
-                    return true;
-                }
-                else
-                {
-                    Debug.LogError("No microcontroller respond! Check wiring, port and baud rate!");
-                    return false;
-                }
+                Debug.Log("Communication with microcontroller was possible");
+                return true;
             }
+
+            // Otherwise the other side did not response
+            Debug.LogError("No microcontroller respond! Check wiring, port and baud rate!");
+            return false;
         }
 
-        /// Low level Serial Functions /// 
+        /// <summary>
+        /// Low level Serial Function. Open connection.
+        /// </summary>
         private void Open()
         {
             Debug.Log("Open serial Port: " + _port + " baud rate: " + _baudrate);
@@ -141,12 +163,18 @@ namespace VRLate
             _stream.Open();
         }
 
+        /// <summary>
+        /// Write message via stream.
+        /// </summary>
         private void Write(string message)
         {
             _stream.WriteLine(message);
             _stream.BaseStream.Flush();
         }
 
+        /// <summary>
+        /// Read serial connection stream.
+        /// </summary>
         private string Read(int timeout_ms = 0)
         {
             _stream.ReadTimeout = timeout_ms;
@@ -160,6 +188,9 @@ namespace VRLate
             }
         }
 
+        /// <summary>
+        /// Close serial connection stream
+        /// </summary>
         private void Close()
         {
             _stream.Close();

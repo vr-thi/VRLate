@@ -18,6 +18,9 @@ using UnityEngine;
 
 namespace VRLate
 {
+    /// <summary>
+    /// Data storage object which holds the recorded sensor data.
+    /// </summary>
     public class SensorData
     {
         private ArrayList _rawData;

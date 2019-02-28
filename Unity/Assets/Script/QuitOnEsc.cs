@@ -15,6 +15,9 @@ IN THE SOFTWARE.
 
 using UnityEngine;
 
+/// <summary>
+/// Close application if the 'escape-key' was pressed.
+/// </summary>
 public class QuitOnEsc : MonoBehaviour
 {
     // Update is called once per frame

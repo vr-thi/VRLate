@@ -19,6 +19,9 @@ using UnityEngine;
 
 namespace VRLate
 {
+    /// <summary>
+    /// Analyze the incoming raw data of the microncontroller and prepare them to be stored in CSV files.
+    /// </summary>
     public class DataAnalyzer
     {
         public int BlackLevelVoltage { get; set; }
@@ -49,21 +52,17 @@ namespace VRLate
             Debug.Log("Finished generating output files");
         }
 
-        public int[] GetPhotosensorIntegerReadings(SensorData data)
-        {
-            this._data = data;
-            ConvertPhotosensorData();
-            int[] photosensorIntegerReadingsClone = (int[]) _photosensorIntegerReadings.Clone();
-            return photosensorIntegerReadingsClone;
-        }
-
+        /// <summary>
+        /// Convert the photosensor readings to percentage data. Tread different display types differently.
+        /// </summary>
         private void ConvertPhotosensorData()
         {
-            int[] photosensorData = _data.GetPhotoSensorData();
+            var photosensorData = _data.GetPhotoSensorData();
 
-            // TODO helper function
+            // TODO Make helper function
             if (_monitorType == MonitorType.OLED_HMD)
             {
+                // For OLED HMDs the display is black most of the time. Replace those readings with -1 placeholder.
                 _photosensorIntegerReadings = new int[photosensorData.Length];
                 for (int i = 0; i < _photosensorIntegerReadings.Length; i++)
                 {
@@ -80,6 +79,7 @@ namespace VRLate
             }
             else if (_monitorType == MonitorType.LCD)
             {
+                // LCDs switch images smoothly. They always output a brightness. -> Use all readings.
                 _photosensorIntegerReadings = (int[]) photosensorData.Clone();
             }
             else
@@ -104,6 +104,9 @@ namespace VRLate
             }
         }
 
+        /// <summary>
+        /// Convert the potentiometer readings to percentage values.
+        /// </summary>
         private void ConvertPotentiometerData()
         {
             int[] potentiometerData = _data.GetPotentiometerData();
@@ -117,11 +120,15 @@ namespace VRLate
             }
         }
 
+        /// <summary>
+        /// Write the analyzed data to CSV files on the hard disk.
+        /// </summary>
         private void WriteCSVFiles()
         {
             if (!Directory.Exists(_outputDirectory))
             {
-                Debug.LogWarning(string.Format("Output directory '{0}' does not exist. Try to create one.", _outputDirectory));
+                Debug.LogWarning(string.Format("Output directory '{0}' does not exist. Try to create one.",
+                    _outputDirectory));
                 var newDir = Directory.CreateDirectory(_outputDirectory);
             }
 
